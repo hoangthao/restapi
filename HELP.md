@@ -1,5 +1,15 @@
 # Getting Started
 
+```sh
+chmod +x mvnw
+./mvnw clean install -DskipTests
+./mvnw spring-boot:run
+curl http://localhost:8080
+curl -v -u "admin:admin" http://localhost:8080/actuator/health
+curl -v -u "admin:admin" -X POST http://localhost:8080/actuator/shutdown
+```
+
+
 ### Reference Documentation
 For further reference, please consider the following sections:
 
