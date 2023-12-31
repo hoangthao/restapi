@@ -3,10 +3,11 @@
 ```sh
 chmod +x mvnw
 ./mvnw clean install -DskipTests
+./mvnw clean package
 ./mvnw spring-boot:run
 curl http://localhost:8080
 curl -v -u "admin:admin" http://localhost:8080/actuator/health
-curl -v -u "admin:admin" -X POST http://localhost:8080/actuator/shutdown
+curl -u "admin:admin" -X POST http://localhost:8080/actuator/shutdown
 ```
 
 
