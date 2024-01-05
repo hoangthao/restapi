@@ -16,8 +16,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ConditionDto {
     
-    private Optional<LocalDateTime> from;
-    private Optional<LocalDateTime> to;
+    private Optional<String> from;
+    private Optional<String> to;
     private Optional<String> description;
 
     private int page = 1;

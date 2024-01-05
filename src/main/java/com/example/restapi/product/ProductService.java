@@ -19,6 +19,7 @@ import com.example.restapi.utils.PageHelper;
 
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
@@ -31,7 +32,7 @@ public class ProductService {
     private final Scheduler scheduler;
 
     public Flux<Product> getAllProducts(){
-        return Flux.defer(() -> Flux.fromIterable(repository.findAll()))
+        return Flux.fromIterable(repository.findAll())
             .subscribeOn(scheduler);
     }
 
@@ -65,7 +66,9 @@ public class ProductService {
     }
 
     public Mono<Page<Product>> fetchPaging(final ConditionDto condition) {
+        System.out.println(condition);
         final Specification<Product> spec = buildSpec(condition);
+        System.out.println(spec);
         final Pageable pageable = PageHelper.parsePageable(condition.getPage(), condition.getSize(), condition.getSorts());
         Mono<Long> count = Mono.fromCallable(() -> repository.count(spec)).subscribeOn(scheduler);
         Mono<List<Product>> products = Mono.fromCallable(() -> 
@@ -78,12 +81,17 @@ public class ProductService {
         return (root, query, cb) -> {
             final List<Predicate> predicates = new ArrayList<>();
             if (condition.getFrom().isPresent()) {
-                predicates.add(cb.lessThanOrEqualTo(root.get("restock"), condition.getFrom().get()));
+                predicates.add(cb.greaterThanOrEqualTo(root.get("restock"),
+                        LocalDateTime.parse(condition.getFrom().get())));
             } else {
-                predicates.add(cb.lessThanOrEqualTo(root.get("restock"), LocalDateTime.now().with(LocalTime.MIN)));
+                predicates.add(cb.greaterThanOrEqualTo(root.get("restock"), LocalDateTime.now().with(LocalTime.MIN)));
             }
-            condition.getTo().ifPresent(v -> predicates.add(cb.lessThanOrEqualTo(root.get("restock"), v)));
-            condition.getDescription().ifPresent(v -> predicates.add(cb.like(root.get("description"), v)));
+            condition.getTo().ifPresent(v -> predicates.add(cb.lessThanOrEqualTo(root.get("restock"), LocalDateTime.parse(v))));
+            condition.getDescription().ifPresent(v -> {
+                if (!v.isBlank()) {
+                    predicates.add(cb.like(cb.lower(root.get("description")), "%".concat(v.toLowerCase()).concat("%")));
+                }
+            });
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
