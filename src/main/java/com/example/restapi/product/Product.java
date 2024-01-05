@@ -1,18 +1,30 @@
 package com.example.restapi.product;
 
+import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
 
+@Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @ToString
-@Table
 public class Product {
-
-    @Id
+    
+    @Id @GeneratedValue
     private Integer id;
+
+    @Column
     private String description;
+    @Column
     private Double price;
+    @Column
+    private LocalDateTime restock;
 }
