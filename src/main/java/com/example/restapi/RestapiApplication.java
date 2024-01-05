@@ -1,10 +1,16 @@
 package com.example.restapi;
 
+import java.util.concurrent.Executors;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
+
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
 @SpringBootApplication
 public class RestapiApplication {
@@ -26,6 +32,11 @@ public class RestapiApplication {
 			// }
 
 		};
+	}
+
+	@Bean
+	public Scheduler jdbScheduler(Environment env) {
+		return Schedulers.fromExecutor(Executors.newFixedThreadPool(env.getRequiredProperty("jdbc.connection.pool.size", Integer.class)));
 	}
 
 }

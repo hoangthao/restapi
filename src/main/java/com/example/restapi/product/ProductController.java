@@ -50,7 +50,7 @@ public class ProductController {
         return this.productService.deleteProduct(productId);
     }
 
-    @PostMapping
+    @PostMapping("/paging")
     public Mono<Page<Product>> fetchProduct(@RequestBody Mono<ConditionDto> conditionMono){
         return conditionMono.flatMap(this.productService::fetchPaging);
     }
